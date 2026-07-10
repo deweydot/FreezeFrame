@@ -1,4 +1,6 @@
-﻿using System.IO.Pipes;
+﻿using System;
+using System.IO;
+using System.IO.Pipes;
 
 using var pipe = new NamedPipeClientStream(".", "FreezeFrameTAS", PipeDirection.InOut);
 Console.WriteLine("Connecting to ULTRAKILL...");
