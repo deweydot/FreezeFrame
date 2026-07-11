@@ -13,6 +13,4 @@ while (true) {
     string input = Console.ReadLine();
     if (string.IsNullOrEmpty(input)) continue;
     writer.WriteLine(input);
-    string response = reader.ReadLine();
-    Console.WriteLine(response);
 }
