@@ -8,7 +8,7 @@ Then, update `FreezeFrame.csproj.user` to match the file path to your game direc
 
 ## Extract BepInEx
 
-Download BepInEx from `https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.5/BepInEx_win_x64_5.4.23.5.zip` and unzip its contents into the Ultrakill game directory.
+Download BepInEx from `https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.5/BepInEx_win_x64_5.4.23.5.zip` and unzip its contents into the Ultrakill game directory. Then, boot the game to initialize the rest of the BepInEx files.
 
 Modify the contents of `[YOUR ULTRAKILL FOLDER]\BepInEx\Config\BepInEx.cfg` to set `HideManagerGameObject = true`. Also, optionally but recommended, under `[Logging.Console]` set `Enabled = true` for debugging purposes.
 
