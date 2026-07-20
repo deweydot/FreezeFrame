@@ -8,7 +8,7 @@ Then, update `FreezeFrame.csproj.user` to match the file path to your game direc
 
 ## Extract BepInEx
 
-Download BepInEx from `https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.5/BepInEx_win_x64_5.4.23.5.zip` and unzip its contents into the Ultrakill game directory.
+Download BepInEx from `https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.5/BepInEx_win_x64_5.4.23.5.zip` and unzip its contents into the Ultrakill game directory. Then, boot the game to initialize the rest of the BepInEx files.
 
 Modify the contents of `[YOUR ULTRAKILL FOLDER]\BepInEx\Config\BepInEx.cfg` to set `HideManagerGameObject = true`. Also, optionally but recommended, under `[Logging.Console]` set `Enabled = true` for debugging purposes.
 
@@ -16,4 +16,4 @@ Modify the contents of `[YOUR ULTRAKILL FOLDER]\BepInEx\Config\BepInEx.cfg` to s
 
 To build the plugin component, run the command `dotnet build src/FreezeFrame`. You should see a file `FreezeFrame.dll` automatically copied into your game's directory under `\BepInEx\plugins`.
 
-To build and run the CLI component, use the command `dotnet run --project src/FreezeFrameCLI`.
+To build and run the CLI component, use the command `dotnet run --project src/FreezeFrameClient`.
