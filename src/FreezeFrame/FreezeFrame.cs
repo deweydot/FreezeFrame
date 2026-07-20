@@ -9,6 +9,7 @@ namespace FreezeFrame {
         private ManagedPipeServer pipe;
         
         private void Awake() {
+            Application.runInBackground = true;
             var harmony = new Harmony("com.deweydot.frameadvance");
             FrameController.ApplyPatch(harmony);
             pipe = new ManagedPipeServer();
