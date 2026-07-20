@@ -57,9 +57,9 @@ namespace FreezeFrame {
                     var readTask = ReadProc(stream);
                     var writeTask = WriteProc(stream, cts.Token);
                     await Task.WhenAny(readTask, writeTask); // await connection end
-                    cts.Cancel(); // clean up both tasks
+                    cts.Cancel(); // signal both tasks to end
                     stream.Dispose();
-                    await WaitForProc(readTask);
+                    await WaitForProc(readTask); // await task cleanup
                     await WaitForProc(writeTask);
                 }
             }
@@ -87,7 +87,7 @@ namespace FreezeFrame {
 
         private async Task WaitForProc(Task t) {
             try { await t; }
-            catch (ObjectDisposedException) { }
+            catch (ObjectDisposedException) { } // discard expected exceptions
             catch (IOException) { }
             catch (OperationCanceledException) { }
         }
