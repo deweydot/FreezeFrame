@@ -1,11 +1,4 @@
-﻿// Minimal named-pipe client GUI (PoC only — no error hardening).
-//
-// Build/run:
-//   dotnet run
-//
-// Edit PipeName below to match your server's pipe name.
-
-using System.IO.Pipes;
+﻿using System.IO.Pipes;
 
 ApplicationConfiguration.Initialize();
 Application.Run(new MainForm());
