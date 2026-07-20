@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Reflection;
 
@@ -11,6 +11,7 @@ namespace FreezeFrame {
     [DefaultExecutionOrder(-10000)]
     [BepInPlugin("com.deweydot.freezeframe", "FreezeFrame", "0.0.1")]
     public class FreezeFrame : BaseUnityPlugin {
+        private ManagedPipeServer pipe;
         private static int stepFrames = -1;
         public static float logicalTime = 0f;
         public static float logicalDeltaTime = 0.008f;
@@ -19,7 +20,8 @@ namespace FreezeFrame {
             var harmony = new Harmony("com.deweydot.freezeframe");
             PatchAssembly(harmony);
             harmony.PatchAll();
-            Logger.LogInfo("FreezeFrame plugin started.");
+            pipe = new ManagedPipeServer();
+            pipe.Start();
         }
         
         private void Update() {
