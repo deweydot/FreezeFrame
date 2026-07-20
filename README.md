@@ -16,4 +16,4 @@ Modify the contents of `[YOUR ULTRAKILL FOLDER]\BepInEx\Config\BepInEx.cfg` to s
 
 To build the plugin component, run the command `dotnet build src/FreezeFrame`. You should see a file `FreezeFrame.dll` automatically copied into your game's directory under `\BepInEx\plugins`.
 
-To build and run the CLI component, use the command `dotnet run --project src/FreezeFrameClient`.
+To build and run the client component, use the command `dotnet run --project src/FreezeFrameClient`.
