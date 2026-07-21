@@ -6,24 +6,6 @@ using System.Collections.Concurrent;
 using System;
 
 namespace FreezeFrame {
-    class AsyncQueue<T> {
-        private readonly ConcurrentQueue<T> queue = new ConcurrentQueue<T>();
-        private readonly SemaphoreSlim signal = new SemaphoreSlim(0);
-
-        public void Enqueue(T item) {
-            queue.Enqueue(item);
-            signal.Release();
-        }
-        
-        public async Task<T> DequeueAsync(CancellationToken ct = default) {
-            await signal.WaitAsync(ct);
-            queue.TryDequeue(out T item);
-            return item;
-        }
-
-        public bool TryDequeue(out T item) => queue.TryDequeue(out item);
-    }
-
     class ManagedPipeServer {
         private const string PipeName = "FreezeFrameTAS";
         private ConcurrentQueue<string> rcvd;
@@ -43,10 +25,10 @@ namespace FreezeFrame {
             send.Enqueue(msg);
         }
 
-        public async void Start() {
-            while (true) {
+        public async void Start(bool reconnect = true) {
+            do {
                 await Connect();
-            }
+            } while (reconnect);
         }
 
         private async Task Connect() {
@@ -91,5 +73,23 @@ namespace FreezeFrame {
             catch (IOException) { }
             catch (OperationCanceledException) { }
         }
+    }
+
+    class AsyncQueue<T> {
+        private readonly ConcurrentQueue<T> queue = new ConcurrentQueue<T>();
+        private readonly SemaphoreSlim signal = new SemaphoreSlim(0);
+
+        public void Enqueue(T item) {
+            queue.Enqueue(item);
+            signal.Release();
+        }
+        
+        public async Task<T> DequeueAsync(CancellationToken ct = default) {
+            await signal.WaitAsync(ct);
+            queue.TryDequeue(out T item);
+            return item;
+        }
+
+        public bool TryDequeue(out T item) => queue.TryDequeue(out item);
     }
 }
