@@ -1,17 +1,19 @@
-﻿using BepInEx;
+﻿using System;
+using BepInEx;
 using HarmonyLib;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace FreezeFrame {
     [DefaultExecutionOrder(-10000)]
     [BepInPlugin("com.deweydot.freezeframe", "FreezeFrame", "0.0.1")]
     public class FreezeFrame : BaseUnityPlugin {
+        public static FrameState state = FrameState.Continous;
         private ManagedPipeServer pipe;
         
         private void Awake() {
             Application.runInBackground = true;
-            var harmony = new Harmony("com.deweydot.frameadvance");
-            FrameController.ApplyPatch(harmony);
+            FrameController.Init(new Harmony("com.deweydot.frameadvance"));
             pipe = new ManagedPipeServer();
             pipe.Start();
         }
@@ -25,7 +27,7 @@ namespace FreezeFrame {
                     FrameController.Enable();
                     break;
                 case "step":
-                    FrameController.Advance(1);
+                    FrameController.Advance(true);
                     break;
                 case "play":
                     FrameController.Disable();
@@ -38,5 +40,12 @@ namespace FreezeFrame {
         private void LateUpdate() {
             FrameController.LateUpdate();
         }
+    }
+    
+    public enum FrameState {
+        Suspended,
+        UpdateOnlyStep,
+        UpdateBothStep,
+        Continous
     }
 }
