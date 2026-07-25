@@ -20,7 +20,7 @@ namespace FreezeFrame {
         public static void Update() {
             if (FreezeFrame.state == FrameState.UpdateOnlyStep || 
                 FreezeFrame.state == FrameState.UpdateBothStep) {
-                FreezeFrame.state = FrameState.Suspended;
+                Enable();
             }
         }
 
@@ -32,7 +32,7 @@ namespace FreezeFrame {
         }
 
         public static void Enable() {
-            if (FreezeFrame.state != FrameState.Continous) return;
+            if (FreezeFrame.state == FrameState.Suspended) return;
             FreezeFrame.state = FrameState.Suspended;
             Time.captureDeltaTime = 0.008f;
             Physics.simulationMode = SimulationMode.Script;
@@ -62,9 +62,10 @@ namespace FreezeFrame {
                 if (!typeof(MonoBehaviour).IsAssignableFrom(type)) continue;
                 var updateMethod = type.GetMethod("Update", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 var fixedUpdateMethod = type.GetMethod("FixedUpdate", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                if (updateMethod == null || fixedUpdateMethod == null) continue;
-                harmony.Patch(updateMethod, prefix: new HarmonyMethod(typeof(FrameController), nameof(UpdateGate)));
-                harmony.Patch(fixedUpdateMethod, prefix: new HarmonyMethod(typeof(FrameController), nameof(FixedUpdateGate)));
+                var lateUpdateMethod = type.GetMethod("LateUpdate", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                if (updateMethod != null) harmony.Patch(updateMethod, prefix: new HarmonyMethod(typeof(FrameController), nameof(UpdateGate)));
+                if (fixedUpdateMethod != null) harmony.Patch(fixedUpdateMethod, prefix: new HarmonyMethod(typeof(FrameController), nameof(FixedUpdateGate)));
+                if (lateUpdateMethod != null) harmony.Patch(lateUpdateMethod, prefix: new HarmonyMethod(typeof(FrameController), nameof(UpdateGate)));
             }
         }
 
@@ -85,7 +86,8 @@ namespace FreezeFrame {
     static class DeltaTimePatch {
         static bool Prefix(ref float __result) {
             if (FreezeFrame.state == FrameState.Continous) return true;
-            __result = FrameController.logicalDeltaTime;
+            if (FreezeFrame.state == FrameState.UpdateBothStep) __result = FrameController.logicalDeltaTime;
+            else __result = 0;
             return false;
         }
     }
