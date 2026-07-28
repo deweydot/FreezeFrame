@@ -29,7 +29,7 @@ namespace FreezeFrame {
     }
 
     struct InputState {
-        public KeyboardState kb;
-        public MouseState m;
+        public KeyboardState keyboard;
+        public MouseState mouse;
     }
 }

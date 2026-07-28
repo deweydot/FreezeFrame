@@ -19,22 +19,7 @@ namespace FreezeFrame {
         
         private void Update() {
             FrameController.Update();
-            string msg = pipe.Read();
-            if (msg == null) return;
-            string[] parts = msg.Split(' ');
-            switch (parts[0]) {
-                case "stop":
-                    FrameController.Enable();
-                    break;
-                case "step":
-                    FrameController.Advance(true, null);
-                    break;
-                case "play":
-                    FrameController.Disable();
-                    break;
-                default:
-                    break;
-            }
+            this.HandleMessage(pipe);
         }
 
         private void LateUpdate() {
