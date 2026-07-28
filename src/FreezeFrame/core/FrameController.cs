@@ -54,7 +54,7 @@ namespace FreezeFrame {
             if (FreezeFrame.state == FrameState.Continous) return;
             FreezeFrame.state = fixedUpdate ? FrameState.UpdateBothStep : FrameState.UpdateOnlyStep;
             Time.timeScale = 1f;
-            if (state != null) input.queueState(state.Value.kb, state.Value.m);
+            if (state != null) input.queueState(state.Value.keyboard, state.Value.mouse);
         }
 
         private static void PatchAssembly(Harmony harmony) {
