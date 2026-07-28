@@ -1,8 +1,6 @@
-﻿using System;
-using BepInEx;
+﻿using BepInEx;
 using HarmonyLib;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace FreezeFrame {
     [DefaultExecutionOrder(-10000)]
@@ -13,7 +11,8 @@ namespace FreezeFrame {
         
         private void Awake() {
             Application.runInBackground = true;
-            FrameController.Init(new Harmony("com.deweydot.frameadvance"));
+            var harmony = new Harmony("com.deweydot.freezeframe");
+            FrameController.Init(harmony);
             pipe = new ManagedPipeServer();
             pipe.Start();
         }
@@ -22,12 +21,13 @@ namespace FreezeFrame {
             FrameController.Update();
             string msg = pipe.Read();
             if (msg == null) return;
-            switch (msg) {
+            string[] parts = msg.Split(' ');
+            switch (parts[0]) {
                 case "stop":
                     FrameController.Enable();
                     break;
                 case "step":
-                    FrameController.Advance(true);
+                    FrameController.Advance(true, null);
                     break;
                 case "play":
                     FrameController.Disable();

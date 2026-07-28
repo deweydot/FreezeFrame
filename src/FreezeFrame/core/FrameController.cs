@@ -4,12 +4,12 @@ using System.Reflection;
 
 using HarmonyLib;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace FreezeFrame {
     static class FrameController {
         public static float logicalTime = 0f;
         public static float logicalDeltaTime = 0.008f;
+        private static InputDevice input;
         
         public static void Init(Harmony harmony) {
             harmony.CreateClassProcessor(typeof(TimePatch)).Patch();
@@ -18,6 +18,7 @@ namespace FreezeFrame {
         }
 
         public static void Update() {
+            if (input == null) input = new InputDevice();
             if (FreezeFrame.state == FrameState.UpdateOnlyStep || 
                 FreezeFrame.state == FrameState.UpdateBothStep) {
                 Enable();
@@ -37,7 +38,7 @@ namespace FreezeFrame {
             Time.captureDeltaTime = 0.008f;
             Physics.simulationMode = SimulationMode.Script;
             Time.timeScale = 0f;
-            InputSystem.settings.updateMode = InputSettings.UpdateMode.ProcessEventsManually;
+            input.Enable();
         }
 
         public static void Disable() {
@@ -46,13 +47,14 @@ namespace FreezeFrame {
             Time.captureDeltaTime = 0f;
             Physics.simulationMode = SimulationMode.FixedUpdate;
             Time.timeScale = 1f;
-            InputSystem.settings.updateMode = InputSettings.UpdateMode.ProcessEventsInDynamicUpdate;
+            input.Disable();
         }
 
-        public static void Advance(bool fixedUpdate) {
+        public static void Advance(bool fixedUpdate, InputState? state) {
             if (FreezeFrame.state == FrameState.Continous) return;
             FreezeFrame.state = fixedUpdate ? FrameState.UpdateBothStep : FrameState.UpdateOnlyStep;
             Time.timeScale = 1f;
+            if (state != null) input.queueState(state.Value.kb, state.Value.m);
         }
 
         private static void PatchAssembly(Harmony harmony) {
