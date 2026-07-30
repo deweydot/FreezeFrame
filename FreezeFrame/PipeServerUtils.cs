@@ -1,19 +1,23 @@
-using System.IO;
+﻿using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 
-namespace FreezeFrame {
-    class AsyncQueue<T> {
+namespace FreezeFrame
+{
+    class AsyncQueue<T>
+    {
         private readonly ConcurrentQueue<T> queue = new ConcurrentQueue<T>();
         private readonly SemaphoreSlim signal = new SemaphoreSlim(0);
 
-        public void Enqueue(T item) {
+        public void Enqueue(T item)
+        {
             queue.Enqueue(item);
             signal.Release();
         }
-        
-        public async Task<T> DequeueAsync(CancellationToken ct = default) {
+
+        public async Task<T> DequeueAsync(CancellationToken ct = default)
+        {
             await signal.WaitAsync(ct);
             queue.TryDequeue(out T item);
             return item;

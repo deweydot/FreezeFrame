@@ -1,5 +1,0 @@
-<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <GameDir>C:\Other Programs\Ultrakill TAS Build</GameDir>
-  </PropertyGroup>
-</Project>
