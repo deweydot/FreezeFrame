@@ -1,3 +1,5 @@
-FreezeFrame/bin
-FreezeFrame/obj
-.vs
+.vs/
+bin/
+obj/
+*.dll
+*.csproj.user
