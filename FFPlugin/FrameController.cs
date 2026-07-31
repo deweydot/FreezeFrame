@@ -3,15 +3,14 @@ using System;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using UnityEngine.InputSystem.LowLevel;
 
 namespace FreezeFrame
 {
     static class FrameController
     {
         public static float logicalTime = 0f;
-        public static float logicalDeltaTime = 0.008f;
-        private static InputDevice input;
+        public static float logicalDeltaTime = 0.008f; // 1/125 seconds
+        private static VirtualInput input;
 
         public static void Init(Harmony harmony)
         {
@@ -22,9 +21,9 @@ namespace FreezeFrame
 
         public static void Update()
         {
-            if (input == null) input = new InputDevice();
-            if (FreezeFramePlugin.state == FrameState.UpdateOnlyStep ||
-                FreezeFramePlugin.state == FrameState.UpdateBothStep)
+            if (input == null) input = new VirtualInput();
+            if (Plugin.state == FrameState.UpdateOnlyStep ||
+                Plugin.state == FrameState.UpdateBothStep)
             {
                 Enable();
             }
@@ -32,7 +31,7 @@ namespace FreezeFrame
 
         public static void LateUpdate()
         {
-            if (FreezeFramePlugin.state == FrameState.UpdateBothStep)
+            if (Plugin.state == FrameState.UpdateBothStep)
             {
                 Physics.Simulate(0.008f);
                 logicalTime += logicalDeltaTime;
@@ -41,8 +40,8 @@ namespace FreezeFrame
 
         public static void Enable()
         {
-            if (FreezeFramePlugin.state == FrameState.Suspended) return;
-            FreezeFramePlugin.state = FrameState.Suspended;
+            if (Plugin.state == FrameState.Suspended) return;
+            Plugin.state = FrameState.Suspended;
             Time.captureDeltaTime = 0.008f;
             Physics.simulationMode = SimulationMode.Script;
             Time.timeScale = 0f;
@@ -51,8 +50,8 @@ namespace FreezeFrame
 
         public static void Disable()
         {
-            if (FreezeFramePlugin.state == FrameState.Continous) return;
-            FreezeFramePlugin.state = FrameState.Continous;
+            if (Plugin.state == FrameState.Continous) return;
+            Plugin.state = FrameState.Continous;
             Time.captureDeltaTime = 0f;
             Physics.simulationMode = SimulationMode.FixedUpdate;
             Time.timeScale = 1f;
@@ -61,8 +60,8 @@ namespace FreezeFrame
 
         public static void Advance(bool fixedUpdate, InputState? state)
         {
-            if (FreezeFramePlugin.state == FrameState.Continous) return;
-            FreezeFramePlugin.state = fixedUpdate ? FrameState.UpdateBothStep : FrameState.UpdateOnlyStep;
+            if (Plugin.state == FrameState.Continous) return;
+            Plugin.state = fixedUpdate ? FrameState.UpdateBothStep : FrameState.UpdateOnlyStep;
             Time.timeScale = 1f;
             if (state != null) input.queueState(state.Value.keyboard, state.Value.mouse);
         }
@@ -83,8 +82,8 @@ namespace FreezeFrame
             }
         }
 
-        public static bool UpdateGate() => FreezeFramePlugin.state != FrameState.Suspended;
-        public static bool FixedUpdateGate() => FreezeFramePlugin.state == FrameState.Continous || FreezeFramePlugin.state == FrameState.UpdateBothStep;
+        public static bool UpdateGate() => Plugin.state != FrameState.Suspended;
+        public static bool FixedUpdateGate() => Plugin.state == FrameState.Continous || Plugin.state == FrameState.UpdateBothStep;
     }
 
     [HarmonyPatch(typeof(Time), nameof(Time.time), MethodType.Getter)]
@@ -92,7 +91,7 @@ namespace FreezeFrame
     {
         static bool Prefix(ref float __result)
         {
-            if (FreezeFramePlugin.state == FrameState.Continous) return true;
+            if (Plugin.state == FrameState.Continous) return true;
             __result = FrameController.logicalTime;
             return false;
         }
@@ -103,8 +102,8 @@ namespace FreezeFrame
     {
         static bool Prefix(ref float __result)
         {
-            if (FreezeFramePlugin.state == FrameState.Continous) return true;
-            if (FreezeFramePlugin.state == FrameState.UpdateBothStep) __result = FrameController.logicalDeltaTime;
+            if (Plugin.state == FrameState.Continous) return true;
+            if (Plugin.state == FrameState.UpdateBothStep) __result = FrameController.logicalDeltaTime;
             else __result = 0;
             return false;
         }

@@ -6,9 +6,9 @@ namespace FreezeFrame
 {
     [DefaultExecutionOrder(-10000)]
     [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
-    public class FreezeFramePlugin : BaseUnityPlugin
+    public class Plugin : BaseUnityPlugin
     {
-        public static FrameState state = FrameState.Continous;
+        internal static FrameState state = FrameState.Continous;
         private PipeServer pipe;
 
         private void Awake()
@@ -17,7 +17,7 @@ namespace FreezeFrame
             var harmony = new Harmony("com.deweydot.freezeframe");
             FrameController.Init(harmony);
             pipe = new PipeServer();
-            pipe.Start();
+            pipe.RunAsync();
         }
 
         private void Update()
@@ -32,7 +32,7 @@ namespace FreezeFrame
         }
     }
 
-    public enum FrameState
+    enum FrameState
     {
         Suspended,
         UpdateOnlyStep,

@@ -1,3 +1,4 @@
 <Solution>
-  <Project Path="FreezeFrame/FreezeFrame.csproj" />
+  <Project Path="FFPlugin/FFPlugin.csproj" />
+  <Project Path="FFClient/FFClient.csproj" Id="bced6b92-69e3-4d12-9fb1-8c3e9b1ae446" />
 </Solution>

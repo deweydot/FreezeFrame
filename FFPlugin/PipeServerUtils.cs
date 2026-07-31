@@ -26,9 +26,9 @@ namespace FreezeFrame
         public bool TryDequeue(out T item) => queue.TryDequeue(out item);
     }
 
-    public static class StreamExtensions
+    static class StreamExtensions
     {
-        public static async Task ReadExactAsync(this Stream stream, byte[] buffer, int offset, int count, CancellationToken ct)
+        public static async Task ReadExactlyAsync(this Stream stream, byte[] buffer, int offset, int count, CancellationToken ct)
         {
             int totalRead = 0;
             while (totalRead < count)

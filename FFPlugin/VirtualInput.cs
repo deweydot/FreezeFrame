@@ -3,12 +3,12 @@ using UnityEngine.InputSystem;
 
 namespace FreezeFrame
 {
-    class InputDevice
+    class VirtualInput
     {
         public Keyboard keyboard;
         public Mouse mouse;
 
-        public InputDevice()
+        public VirtualInput()
         {
             InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
             keyboard = InputSystem.AddDevice<Keyboard>();
