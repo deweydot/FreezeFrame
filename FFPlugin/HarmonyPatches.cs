@@ -8,7 +8,7 @@ namespace FreezeFrame
     {
         static bool Prefix(ref float __result)
         {
-            if (Plugin.state == FrameState.Continous) return true;
+            if (FrameController.state == FrameState.Continous) return true;
             __result = FrameController.logicalTime;
             return false;
         }
@@ -19,8 +19,8 @@ namespace FreezeFrame
     {
         static bool Prefix(ref float __result)
         {
-            if (Plugin.state == FrameState.Continous) return true;
-            if (Plugin.state == FrameState.UpdateBothStep) __result = FrameController.logicalDeltaTime;
+            if (FrameController.state == FrameState.Continous) return true;
+            if (FrameController.state == FrameState.UpdateBothStep) __result = FrameController.logicalDeltaTime;
             else __result = 0;
             return false;
         }
@@ -31,7 +31,7 @@ namespace FreezeFrame
     {
         static bool Prefix()
         {
-            return Plugin.state == FrameState.Continous;
+            return FrameController.state == FrameState.Continous;
         }
     }
 
@@ -40,7 +40,7 @@ namespace FreezeFrame
     {
         static bool Prefix()
         {
-            return Plugin.state == FrameState.Continous;
+            return FrameController.state == FrameState.Continous;
         }
     }
 }

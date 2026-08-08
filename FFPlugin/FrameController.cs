@@ -8,6 +8,7 @@ namespace FreezeFrame
 {
     class FrameController
     {
+        public static FrameState state = FrameState.Continous;
         public static float logicalTime = 0f;
         public const float logicalDeltaTime = 0.008f; // 1/125 seconds
         private AccessTools.FieldRef<TimeController, float> timeScaleRef;
@@ -22,8 +23,8 @@ namespace FreezeFrame
 
         public void Update()
         {
-            if (Plugin.state == FrameState.UpdateOnlyStep ||
-                Plugin.state == FrameState.UpdateBothStep)
+            if (state == FrameState.UpdateOnlyStep ||
+                state == FrameState.UpdateBothStep)
             {
                 Enable();
             }
@@ -31,7 +32,7 @@ namespace FreezeFrame
 
         public void LateUpdate()
         {
-            if (Plugin.state == FrameState.UpdateBothStep)
+            if (state == FrameState.UpdateBothStep)
             {
                 Physics.Simulate(0.008f);
                 logicalTime += logicalDeltaTime;
@@ -40,7 +41,7 @@ namespace FreezeFrame
 
         public void Enable()
         {
-            Plugin.state = FrameState.Suspended;
+            state = FrameState.Suspended;
             Time.captureDeltaTime = 0.008f;
             Physics.simulationMode = SimulationMode.Script;
             Time.timeScale = 0f;
@@ -48,7 +49,7 @@ namespace FreezeFrame
 
         public void Disable()
         {
-            Plugin.state = FrameState.Continous;
+            state = FrameState.Continous;
             Time.captureDeltaTime = 0f;
             Physics.simulationMode = SimulationMode.FixedUpdate;
             Time.timeScale = timeScaleRef(MonoSingleton<TimeController>.Instance) * timeScaleModifierRef(MonoSingleton<TimeController>.Instance);
@@ -56,8 +57,8 @@ namespace FreezeFrame
 
         public void Advance(bool fixedUpdate)
         {
-            if (Plugin.state == FrameState.Continous) return;
-            Plugin.state = fixedUpdate ? FrameState.UpdateBothStep : FrameState.UpdateOnlyStep;
+            if (state == FrameState.Continous) return;
+            state = fixedUpdate ? FrameState.UpdateBothStep : FrameState.UpdateOnlyStep;
             Time.timeScale = timeScaleRef(MonoSingleton<TimeController>.Instance) * timeScaleModifierRef(MonoSingleton<TimeController>.Instance);
         }
 
@@ -77,7 +78,15 @@ namespace FreezeFrame
             }
         }
 
-        public static bool UpdateGate() => Plugin.state != FrameState.Suspended;
-        public static bool FixedUpdateGate() => Plugin.state == FrameState.Continous || Plugin.state == FrameState.UpdateBothStep;
+        public static bool UpdateGate() => state != FrameState.Suspended;
+        public static bool FixedUpdateGate() => state == FrameState.Continous || state == FrameState.UpdateBothStep;
+    }
+
+    public enum FrameState
+    {
+        Suspended,
+        UpdateOnlyStep,
+        UpdateBothStep,
+        Continous
     }
 }

@@ -8,7 +8,6 @@ namespace FreezeFrame
     [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
     public partial class Plugin : BaseUnityPlugin
     {
-        public static FrameState state = FrameState.Continous;
         private PipeController pipe = new PipeController();
         private FrameController frame;
         private SettingsController settings = new SettingsController();
@@ -65,13 +64,5 @@ namespace FreezeFrame
         {
             StartCoroutine(LoadAndSuspend(sceneName));
         }
-    }
-
-    public enum FrameState
-    {
-        Suspended,
-        UpdateOnlyStep,
-        UpdateBothStep,
-        Continous
     }
 }
