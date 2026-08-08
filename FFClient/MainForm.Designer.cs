@@ -45,7 +45,7 @@
             // 
             scintilla1.AutocompleteListSelectedBackColor = Color.FromArgb(0, 120, 215);
             scintilla1.Dock = DockStyle.Fill;
-            scintilla1.Font = new Font("Verdana", 12F);
+            scintilla1.Font = new Font("Verdana", 9F);
             scintilla1.LexerName = null;
             scintilla1.Location = new Point(0, 24);
             scintilla1.Name = "scintilla1";

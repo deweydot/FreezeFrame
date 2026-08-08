@@ -1,6 +1,5 @@
 ﻿using System.IO.Pipes;
 using System.Threading.Channels;
-using static FreezeFrame.Protocol;
 
 namespace FreezeFrame
 {
@@ -27,7 +26,7 @@ namespace FreezeFrame
 
         private async Task Connect(CancellationToken ct = default)
         {
-            using (var stream = new NamedPipeClientStream(".", PipeName, PipeDirection.InOut,
+            using (var stream = new NamedPipeClientStream(".", Protocol.Consts.PipeName, PipeDirection.InOut,
                 PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly))
             {
                 await stream.ConnectAsync(); // connect to server
@@ -49,13 +48,13 @@ namespace FreezeFrame
             while (!ct.IsCancellationRequested)
             {
                 await stream.ReadExactlyAsync(header, 0, 1, ct); // get first byte
-                if ((header[0] & PayloadFlag) == 0) // payloadless messages
+                if ((header[0] & Protocol.Consts.PayloadFlag) == 0) // payloadless messages
                 {
                     await rcvd.Writer.WriteAsync(new Message { opcode = header[0], payload = null }, ct);
                     continue;
                 }
-                await stream.ReadExactlyAsync(header, 1, HeaderBytes - 1, ct); // get header length
-                size = ToUInt24(header, 1);
+                await stream.ReadExactlyAsync(header, 1, Protocol.Consts.HeaderBytes - 1, ct); // get header length
+                size = ToUInt24(header.AsSpan(1, Protocol.Consts.HeaderBytes - 1))
                 byte[] buf = new byte[size];
                 await stream.ReadExactlyAsync(buf, 0, size, ct);
                 await rcvd.Writer.WriteAsync(new Message { opcode = header[0], payload = buf }, ct);
@@ -90,9 +89,9 @@ namespace FreezeFrame
             catch (OperationCanceledException) { }
         }
 
-        private static int ToUInt24(byte[] buffer, int offset)
+        private static int ToUInt24(ReadOnlySpan<byte> buffer)
         {
-            return buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16);
+            return buffer[0] | (buffer[1] << 8) | (buffer[2] << 16);
         }
 
         public struct Message
