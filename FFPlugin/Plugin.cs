@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using HarmonyLib;
+using System;
 using UnityEngine;
 
 namespace FreezeFrame
@@ -11,6 +12,7 @@ namespace FreezeFrame
         public static FrameState state = FrameState.Continous;
         private PipeServer pipe = new PipeServer();
         private FrameController fc;
+        private VirtualInput input;
         private bool isLoading = false;
 
         private void Awake()
@@ -23,6 +25,7 @@ namespace FreezeFrame
 
         private void Update()
         {
+            if (input == null) input = new VirtualInput();
             fc.Update();
             if (isLoading) return;
             PipeServer.Message? msg = pipe.Read();
@@ -32,6 +35,29 @@ namespace FreezeFrame
         private void LateUpdate()
         {
             fc.LateUpdate();
+        }
+
+        public void Enable()
+        {
+            fc.Enable();
+            input.Enable();
+        }
+
+        public void Disable()
+        {
+            fc.Disable();
+            input.Disable();
+        }
+
+        public void Advance(bool fixedUpdate, InputState? state)
+        {
+            fc.Advance(fixedUpdate);
+            if (state != null) input.queueState(state.Value.keyboard, state.Value.mouse);
+        }
+
+        public void LoadScene(string sceneName)
+        {
+            StartCoroutine(LoadAndSuspend(sceneName));
         }
     }
 

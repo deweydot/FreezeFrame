@@ -5,11 +5,6 @@ namespace FreezeFrame
 {
     partial class Plugin
     {
-        private void LoadScene(string sceneName)
-        {
-            StartCoroutine(LoadAndSuspend(sceneName));
-        }
-
         private IEnumerator LoadAndSuspend(string sceneName)
         {
             isLoading = true;

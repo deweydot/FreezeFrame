@@ -10,7 +10,6 @@ namespace FreezeFrame
     {
         public static float logicalTime = 0f;
         public static float logicalDeltaTime = 0.008f; // 1/125 seconds
-        private VirtualInput input;
         private AccessTools.FieldRef<TimeController, float> timeScaleRef;
         private AccessTools.FieldRef<TimeController, float> timeScaleModifierRef;
 
@@ -25,7 +24,6 @@ namespace FreezeFrame
 
         public void Update()
         {
-            if (input == null) input = new VirtualInput();
             if (Plugin.state == FrameState.UpdateOnlyStep ||
                 Plugin.state == FrameState.UpdateBothStep)
             {
@@ -48,7 +46,6 @@ namespace FreezeFrame
             Time.captureDeltaTime = 0.008f;
             Physics.simulationMode = SimulationMode.Script;
             Time.timeScale = 0f;
-            input.Enable();
         }
 
         public void Disable()
@@ -57,15 +54,13 @@ namespace FreezeFrame
             Time.captureDeltaTime = 0f;
             Physics.simulationMode = SimulationMode.FixedUpdate;
             Time.timeScale = timeScaleRef(MonoSingleton<TimeController>.Instance) * timeScaleModifierRef(MonoSingleton<TimeController>.Instance);
-            input.Disable();
         }
 
-        public void Advance(bool fixedUpdate, InputState? state)
+        public void Advance(bool fixedUpdate)
         {
             if (Plugin.state == FrameState.Continous) return;
             Plugin.state = fixedUpdate ? FrameState.UpdateBothStep : FrameState.UpdateOnlyStep;
             Time.timeScale = timeScaleRef(MonoSingleton<TimeController>.Instance) * timeScaleModifierRef(MonoSingleton<TimeController>.Instance);
-            if (state != null) input.queueState(state.Value.keyboard, state.Value.mouse);
         }
 
         private void PatchAssembly(Harmony harmony)
