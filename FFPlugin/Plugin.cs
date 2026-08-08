@@ -10,12 +10,13 @@ namespace FreezeFrame
     {
         public static FrameState state = FrameState.Continous;
         private PipeServer pipe;
+        private FrameController fc;
 
         private void Awake()
         {
             Application.runInBackground = true;
             var harmony = new Harmony("com.deweydot.freezeframe");
-            FrameController.Init(harmony);
+            fc = new FrameController(harmony);
             pipe = new PipeServer();
             pipe.RunAsync();
             isLoading = false;
@@ -23,7 +24,7 @@ namespace FreezeFrame
 
         private void Update()
         {
-            FrameController.Update();
+            fc.Update();
             if (isLoading) return;
             PipeServer.Message? msg = pipe.Read();
             if (msg != null) this.Parse(msg.Value);
@@ -31,7 +32,7 @@ namespace FreezeFrame
 
         private void LateUpdate()
         {
-            FrameController.LateUpdate();
+            fc.LateUpdate();
         }
 
         public bool isLoading { private get; set; }

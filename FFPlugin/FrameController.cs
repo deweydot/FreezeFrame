@@ -6,15 +6,15 @@ using UnityEngine;
 
 namespace FreezeFrame
 {
-    static class FrameController
+    class FrameController
     {
         public static float logicalTime = 0f;
         public static float logicalDeltaTime = 0.008f; // 1/125 seconds
-        private static VirtualInput input;
-        private static AccessTools.FieldRef<TimeController, float> timeScaleRef;
-        private static AccessTools.FieldRef<TimeController, float> timeScaleModifierRef;
+        private VirtualInput input;
+        private AccessTools.FieldRef<TimeController, float> timeScaleRef;
+        private AccessTools.FieldRef<TimeController, float> timeScaleModifierRef;
 
-        public static void Init(Harmony harmony)
+        public FrameController(Harmony harmony)
         {
             harmony.CreateClassProcessor(typeof(TimePatch)).Patch();
             harmony.CreateClassProcessor(typeof(DeltaTimePatch)).Patch();
@@ -23,7 +23,7 @@ namespace FreezeFrame
             timeScaleModifierRef = AccessTools.FieldRefAccess<TimeController, float>("timeScaleModifier");
         }
 
-        public static void Update()
+        public void Update()
         {
             if (input == null) input = new VirtualInput();
             if (Plugin.state == FrameState.UpdateOnlyStep ||
@@ -33,7 +33,7 @@ namespace FreezeFrame
             }
         }
 
-        public static void LateUpdate()
+        public void LateUpdate()
         {
             if (Plugin.state == FrameState.UpdateBothStep)
             {
@@ -42,7 +42,7 @@ namespace FreezeFrame
             }
         }
 
-        public static void Enable()
+        public void Enable()
         {
             Plugin.state = FrameState.Suspended;
             Time.captureDeltaTime = 0.008f;
@@ -51,7 +51,7 @@ namespace FreezeFrame
             input.Enable();
         }
 
-        public static void Disable()
+        public void Disable()
         {
             Plugin.state = FrameState.Continous;
             Time.captureDeltaTime = 0f;
@@ -60,7 +60,7 @@ namespace FreezeFrame
             input.Disable();
         }
 
-        public static void Advance(bool fixedUpdate, InputState? state)
+        public void Advance(bool fixedUpdate, InputState? state)
         {
             if (Plugin.state == FrameState.Continous) return;
             Plugin.state = fixedUpdate ? FrameState.UpdateBothStep : FrameState.UpdateOnlyStep;
@@ -68,7 +68,7 @@ namespace FreezeFrame
             if (state != null) input.queueState(state.Value.keyboard, state.Value.mouse);
         }
 
-        private static void PatchAssembly(Harmony harmony)
+        private void PatchAssembly(Harmony harmony)
         {
             var gameAssembly = AppDomain.CurrentDomain.GetAssemblies()
                 .First(a => a.GetName().Name == "Assembly-CSharp");
