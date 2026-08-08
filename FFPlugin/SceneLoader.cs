@@ -3,20 +3,20 @@ using UnityEngine;
 
 namespace FreezeFrame
 {
-    static class SceneLoader
+    partial class Plugin
     {
-        public static void LoadScene(this Plugin plugin, string sceneName)
+        private void LoadScene(string sceneName)
         {
-            plugin.StartCoroutine(plugin.LoadAndSuspend(sceneName));
+            StartCoroutine(LoadAndSuspend(sceneName));
         }
 
-        private static IEnumerator LoadAndSuspend(this Plugin plugin, string sceneName)
+        private IEnumerator LoadAndSuspend(string sceneName)
         {
-            plugin.isLoading = true;
+            isLoading = true;
             Coroutine loadScene = SceneHelper.LoadSceneAsync(sceneName, false);
             yield return loadScene;
-            FrameController.Enable();
-            plugin.isLoading = false;
+            fc.Enable();
+            isLoading = false;
         }
     }
 }

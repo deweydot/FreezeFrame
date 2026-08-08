@@ -9,17 +9,16 @@ namespace FreezeFrame
     public partial class Plugin : BaseUnityPlugin
     {
         public static FrameState state = FrameState.Continous;
-        private PipeServer pipe;
+        private PipeServer pipe = new PipeServer();
         private FrameController fc;
+        private bool isLoading = false;
 
         private void Awake()
         {
             Application.runInBackground = true;
             var harmony = new Harmony("com.deweydot.freezeframe");
             fc = new FrameController(harmony);
-            pipe = new PipeServer();
             pipe.RunAsync();
-            isLoading = false;
         }
 
         private void Update()
@@ -34,8 +33,6 @@ namespace FreezeFrame
         {
             fc.LateUpdate();
         }
-
-        public bool isLoading { private get; set; }
     }
 
     public enum FrameState

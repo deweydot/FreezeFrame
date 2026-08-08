@@ -4,25 +4,25 @@ using UnityEngine.InputSystem.LowLevel;
 
 namespace FreezeFrame
 {
-    static class ProtocolParser
+    partial class Plugin
     {
-        public static void Parse(this Plugin plugin, PipeServer.Message msg)
+        private void Parse(PipeServer.Message msg)
         {
             if ((msg.opcode & Protocol.Consts.PayloadFlag) == 0)
             {
                 switch ((Protocol.Opcode)(msg.opcode & Protocol.Consts.OpcodeMask))
                 {
                     case Protocol.Opcode.Enable:
-                        FrameController.Disable();
+                        fc.Disable();
                         break;
                     case Protocol.Opcode.Disable:
-                        FrameController.Enable();
+                        fc.Enable();
                         break;
                     case Protocol.Opcode.StepFixed:
-                        FrameController.Advance(true, null);
+                        fc.Advance(true, null);
                         break;
                     case Protocol.Opcode.StepUpdate:
-                        FrameController.Advance(false, null);
+                        fc.Advance(false, null);
                         break;
                     default:
                         throw new InvalidDataException("Unrecognized Opcode");
@@ -34,13 +34,13 @@ namespace FreezeFrame
                 switch ((Protocol.Opcode)(msg.opcode & Protocol.Consts.OpcodeMask))
                 {
                     case Protocol.Opcode.StepFixed:
-                        FrameController.Advance(true, toInputState(msg.payload));
+                        fc.Advance(true, toInputState(msg.payload));
                         break;
                     case Protocol.Opcode.StepUpdate:
-                        FrameController.Advance(false, toInputState(msg.payload));
+                        fc.Advance(false, toInputState(msg.payload));
                         break;
                     case Protocol.Opcode.LoadScene:
-                        plugin.LoadScene(msg.payload.ToString());
+                        LoadScene(msg.payload.ToString());
                         break;
                     default:
                         throw new InvalidDataException("Unrecognized Opcode");
