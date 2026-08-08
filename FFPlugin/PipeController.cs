@@ -7,12 +7,12 @@ using System.Collections.Concurrent;
 
 namespace FreezeFrame
 {
-    class PipeServer
+    class PipeController
     {
         private ConcurrentQueue<Message> rcvd;
         private AsyncQueue<Message> send;
 
-        public PipeServer()
+        public PipeController()
         {
             rcvd = new ConcurrentQueue<Message>();
             send = new AsyncQueue<Message>();

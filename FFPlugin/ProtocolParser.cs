@@ -1,28 +1,36 @@
 ﻿using System;
 using System.IO;
+using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 
 namespace FreezeFrame
 {
     partial class Plugin
     {
-        private void Parse(PipeServer.Message msg)
+        private static readonly Key[] KeyBitmaskOrder =
+        {
+            Key.W, Key.A, Key.S, Key.D, Key.LeftShift, Key.LeftCtrl, Key.Space, Key.Comma,
+            Key.Period, Key.Digit1, Key.Digit2, Key.Digit3, Key.Digit4, Key.Digit5, Key.E, Key.Q,
+            Key.G, Key.F, Key.V, Key.R
+        };
+
+        private void Parse(PipeController.Message msg)
         {
             if ((msg.opcode & Protocol.Consts.PayloadFlag) == 0)
             {
                 switch ((Protocol.Opcode)(msg.opcode & Protocol.Consts.OpcodeMask))
                 {
                     case Protocol.Opcode.Enable:
-                        fc.Disable();
+                        Disable();
                         break;
                     case Protocol.Opcode.Disable:
-                        fc.Enable();
+                        Enable();
                         break;
                     case Protocol.Opcode.StepFixed:
-                        fc.Advance(true, null);
+                        Advance(true, null);
                         break;
                     case Protocol.Opcode.StepUpdate:
-                        fc.Advance(false, null);
+                        Advance(false, null);
                         break;
                     default:
                         throw new InvalidDataException("Unrecognized Opcode");
@@ -34,10 +42,10 @@ namespace FreezeFrame
                 switch ((Protocol.Opcode)(msg.opcode & Protocol.Consts.OpcodeMask))
                 {
                     case Protocol.Opcode.StepFixed:
-                        fc.Advance(true, toInputState(msg.payload));
+                        Advance(true, toInputState(msg.payload));
                         break;
                     case Protocol.Opcode.StepUpdate:
-                        fc.Advance(false, toInputState(msg.payload));
+                        Advance(false, toInputState(msg.payload));
                         break;
                     case Protocol.Opcode.LoadScene:
                         LoadScene(msg.payload.ToString());
@@ -50,19 +58,16 @@ namespace FreezeFrame
 
         private static InputState? toInputState(byte[] data)
         {
-            if (data.Length < 8) throw new InvalidDataException("Invalid Message Format");
+            if (data.Length != 11) throw new InvalidDataException("Invalid Message Format");
             MouseState m = new MouseState
             {
-                delta = new UnityEngine.Vector2(BitConverter.ToSingle(data, 0), BitConverter.ToSingle(data, 4)),
-                buttons = data[8]
+                delta = new UnityEngine.Vector2(BitConverter.ToSingle(data, 0), BitConverter.ToSingle(data, 4))
             };
+            uint mask = (uint)(data[8] | (data[9] << 8) | (data[10] << 16));
             KeyboardState kb = new KeyboardState();
-            for (int i = 9; i < data.Length; i++) kb.Set((UnityEngine.InputSystem.Key)data[i], true);
-            return new InputState
-            {
-                keyboard = kb,
-                mouse = m
-            };
+            for (int i = 0; i < KeyBitmaskOrder.Length; i++)
+                if ((mask & (1u << i)) != 0) kb.Set(KeyBitmaskOrder[i], true);
+            return new InputState { keyboard = kb, mouse = m };
         }
     }
 }

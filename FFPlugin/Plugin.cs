@@ -1,6 +1,5 @@
 ﻿using BepInEx;
 using HarmonyLib;
-using System;
 using UnityEngine;
 
 namespace FreezeFrame
@@ -10,8 +9,9 @@ namespace FreezeFrame
     public partial class Plugin : BaseUnityPlugin
     {
         public static FrameState state = FrameState.Continous;
-        private PipeServer pipe = new PipeServer();
-        private FrameController fc;
+        private PipeController pipe = new PipeController();
+        private FrameController frame;
+        private SettingsController settings = new SettingsController();
         private VirtualInput input;
         private bool isLoading = false;
 
@@ -19,39 +19,45 @@ namespace FreezeFrame
         {
             Application.runInBackground = true;
             var harmony = new Harmony("com.deweydot.freezeframe");
-            fc = new FrameController(harmony);
+            harmony.CreateClassProcessor(typeof(TimePatch)).Patch();
+            harmony.CreateClassProcessor(typeof(DeltaTimePatch)).Patch();
+            harmony.CreateClassProcessor(typeof(SaveBindingsPatch)).Patch();
+            harmony.CreateClassProcessor(typeof(CommitPrefsPatch)).Patch();
+            frame = new FrameController(harmony);
             pipe.RunAsync();
         }
 
         private void Update()
         {
             if (input == null) input = new VirtualInput();
-            fc.Update();
+            frame.Update();
             if (isLoading) return;
-            PipeServer.Message? msg = pipe.Read();
+            PipeController.Message? msg = pipe.Read();
             if (msg != null) this.Parse(msg.Value);
         }
 
         private void LateUpdate()
         {
-            fc.LateUpdate();
+            frame.LateUpdate();
         }
 
         public void Enable()
         {
-            fc.Enable();
+            frame.Enable();
             input.Enable();
+            settings.Apply();
         }
 
         public void Disable()
         {
-            fc.Disable();
+            frame.Disable();
             input.Disable();
+            settings.Revert();
         }
 
         public void Advance(bool fixedUpdate, InputState? state)
         {
-            fc.Advance(fixedUpdate);
+            frame.Advance(fixedUpdate);
             if (state != null) input.queueState(state.Value.keyboard, state.Value.mouse);
         }
 

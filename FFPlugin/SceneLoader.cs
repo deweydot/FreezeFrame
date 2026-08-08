@@ -10,7 +10,7 @@ namespace FreezeFrame
             isLoading = true;
             Coroutine loadScene = SceneHelper.LoadSceneAsync(sceneName, false);
             yield return loadScene;
-            fc.Enable();
+            frame.Enable();
             isLoading = false;
         }
     }

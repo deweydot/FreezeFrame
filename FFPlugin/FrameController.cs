@@ -9,14 +9,12 @@ namespace FreezeFrame
     class FrameController
     {
         public static float logicalTime = 0f;
-        public static float logicalDeltaTime = 0.008f; // 1/125 seconds
+        public const float logicalDeltaTime = 0.008f; // 1/125 seconds
         private AccessTools.FieldRef<TimeController, float> timeScaleRef;
         private AccessTools.FieldRef<TimeController, float> timeScaleModifierRef;
 
         public FrameController(Harmony harmony)
         {
-            harmony.CreateClassProcessor(typeof(TimePatch)).Patch();
-            harmony.CreateClassProcessor(typeof(DeltaTimePatch)).Patch();
             PatchAssembly(harmony);
             timeScaleRef = AccessTools.FieldRefAccess<TimeController, float>("timeScale");
             timeScaleModifierRef = AccessTools.FieldRefAccess<TimeController, float>("timeScaleModifier");
@@ -81,28 +79,5 @@ namespace FreezeFrame
 
         public static bool UpdateGate() => Plugin.state != FrameState.Suspended;
         public static bool FixedUpdateGate() => Plugin.state == FrameState.Continous || Plugin.state == FrameState.UpdateBothStep;
-    }
-
-    [HarmonyPatch(typeof(Time), nameof(Time.time), MethodType.Getter)]
-    static class TimePatch
-    {
-        static bool Prefix(ref float __result)
-        {
-            if (Plugin.state == FrameState.Continous) return true;
-            __result = FrameController.logicalTime;
-            return false;
-        }
-    }
-
-    [HarmonyPatch(typeof(Time), nameof(Time.deltaTime), MethodType.Getter)]
-    static class DeltaTimePatch
-    {
-        static bool Prefix(ref float __result)
-        {
-            if (Plugin.state == FrameState.Continous) return true;
-            if (Plugin.state == FrameState.UpdateBothStep) __result = FrameController.logicalDeltaTime;
-            else __result = 0;
-            return false;
-        }
     }
 }
