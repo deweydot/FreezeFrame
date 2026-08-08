@@ -40,7 +40,6 @@ namespace FreezeFrame
 
         public static void Enable()
         {
-            if (Plugin.state == FrameState.Suspended) return;
             Plugin.state = FrameState.Suspended;
             Time.captureDeltaTime = 0.008f;
             Physics.simulationMode = SimulationMode.Script;
@@ -50,11 +49,10 @@ namespace FreezeFrame
 
         public static void Disable()
         {
-            if (Plugin.state == FrameState.Continous) return;
             Plugin.state = FrameState.Continous;
             Time.captureDeltaTime = 0f;
             Physics.simulationMode = SimulationMode.FixedUpdate;
-            Time.timeScale = 1f;
+            Time.timeScale = 1f * MonoSingleton<TimeController>.Instance.timeScaleModifier;
             input.Disable();
         }
 
@@ -62,7 +60,7 @@ namespace FreezeFrame
         {
             if (Plugin.state == FrameState.Continous) return;
             Plugin.state = fixedUpdate ? FrameState.UpdateBothStep : FrameState.UpdateOnlyStep;
-            Time.timeScale = 1f;
+            Time.timeScale = 1f * MonoSingleton<TimeController>.Instance.timeScaleModifier;
             if (state != null) input.queueState(state.Value.keyboard, state.Value.mouse);
         }
 

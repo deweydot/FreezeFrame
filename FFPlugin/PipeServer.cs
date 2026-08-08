@@ -4,7 +4,6 @@ using System.IO.Pipes;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
-using static FreezeFrame.Protocol;
 
 namespace FreezeFrame
 {
@@ -29,7 +28,7 @@ namespace FreezeFrame
         // Send a message
         public void Write(Message msg)
         {
-            if (msg.payload != null && msg.payload.Length > MaxPayloadLength) throw new InvalidDataException("Invalid Payload Length");
+            if (msg.payload != null && msg.payload.Length > Protocol.Consts.MaxPayloadLength) throw new InvalidDataException("Invalid Payload Length");
             send.Enqueue(msg);
         }
 
@@ -45,7 +44,7 @@ namespace FreezeFrame
 
         private async Task Connect(CancellationToken ct = default)
         {
-            using (var stream = new NamedPipeServerStream(PipeName, PipeDirection.InOut, 1,
+            using (var stream = new NamedPipeServerStream(Protocol.Consts.PipeName, PipeDirection.InOut, 1,
                 PipeTransmissionMode.Byte, PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly))
             {
                 await stream.WaitForConnectionAsync(ct); // wait for client
@@ -67,13 +66,13 @@ namespace FreezeFrame
             while (!ct.IsCancellationRequested)
             {
                 await stream.ReadExactlyAsync(header, 0, 1, ct); // get first byte
-                if ((header[0] & PayloadFlag) == 0) // payloadless messages
+                if ((header[0] & Protocol.Consts.PayloadFlag) == 0) // payloadless messages
                 {
                     rcvd.Enqueue(new Message { opcode = header[0], payload = null });
                     continue;
                 }
-                await stream.ReadExactlyAsync(header, 1, HeaderBytes - 1, ct); // get header length
-                size = ToUInt24(header, 1);
+                await stream.ReadExactlyAsync(header, 1, Protocol.Consts.HeaderBytes - 1, ct); // get header length
+                size = ToUInt24(header.AsSpan(1, Protocol.Consts.HeaderBytes - 1));
                 byte[] buf = new byte[size];
                 await stream.ReadExactlyAsync(buf, 0, size, ct);
                 rcvd.Enqueue(new Message { opcode = header[0], payload = buf });
@@ -108,9 +107,9 @@ namespace FreezeFrame
             catch (OperationCanceledException) { }
         }
 
-        private static int ToUInt24(byte[] buffer, int offset)
+        private static int ToUInt24(ReadOnlySpan<byte> buffer)
         {
-            return buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16);
+            return buffer[0] | (buffer[1] << 8) | (buffer[2] << 16);
         }
 
         public struct Message
