@@ -8,7 +8,7 @@ namespace FreezeFrame
 {
     class FrameController
     {
-        public static FrameState state = FrameState.Continous;
+        public static FrameState state = FrameState.Continuous;
         public static float logicalTime = 0f;
         public const float logicalDeltaTime = 0.008f; // 1/125 seconds
         private AccessTools.FieldRef<TimeController, float> timeScaleRef;
@@ -49,7 +49,7 @@ namespace FreezeFrame
 
         public void Disable()
         {
-            state = FrameState.Continous;
+            state = FrameState.Continuous;
             Time.captureDeltaTime = 0f;
             Physics.simulationMode = SimulationMode.FixedUpdate;
             Time.timeScale = timeScaleRef(MonoSingleton<TimeController>.Instance) * timeScaleModifierRef(MonoSingleton<TimeController>.Instance);
@@ -57,7 +57,7 @@ namespace FreezeFrame
 
         public void Advance(bool fixedUpdate)
         {
-            if (state == FrameState.Continous) return;
+            if (state == FrameState.Continuous) return;
             state = fixedUpdate ? FrameState.UpdateBothStep : FrameState.UpdateOnlyStep;
             Time.timeScale = timeScaleRef(MonoSingleton<TimeController>.Instance) * timeScaleModifierRef(MonoSingleton<TimeController>.Instance);
         }
@@ -79,7 +79,7 @@ namespace FreezeFrame
         }
 
         public static bool UpdateGate() => state != FrameState.Suspended;
-        public static bool FixedUpdateGate() => state == FrameState.Continous || state == FrameState.UpdateBothStep;
+        public static bool FixedUpdateGate() => state == FrameState.Continuous || state == FrameState.UpdateBothStep;
     }
 
     public enum FrameState
@@ -87,6 +87,6 @@ namespace FreezeFrame
         Suspended,
         UpdateOnlyStep,
         UpdateBothStep,
-        Continous
+        Continuous
     }
 }
