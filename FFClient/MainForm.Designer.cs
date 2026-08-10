@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            scintilla1 = new ScintillaNET.Scintilla();
+            scintilla = new ScintillaNET.Scintilla();
             menuStrip1 = new MenuStrip();
             runToolStripMenuItem = new ToolStripMenuItem();
             toggleFreezeF1ToolStripMenuItem = new ToolStripMenuItem();
@@ -41,18 +41,18 @@
             statusStrip1.SuspendLayout();
             SuspendLayout();
             // 
-            // scintilla1
+            // scintilla
             // 
-            scintilla1.AutocompleteListSelectedBackColor = Color.FromArgb(0, 120, 215);
-            scintilla1.Dock = DockStyle.Fill;
-            scintilla1.Font = new Font("Verdana", 9F);
-            scintilla1.LexerName = null;
-            scintilla1.Location = new Point(0, 24);
-            scintilla1.Name = "scintilla1";
-            scintilla1.ScrollWidth = 49;
-            scintilla1.Size = new Size(384, 337);
-            scintilla1.TabIndex = 0;
-            scintilla1.Click += scintilla1_Click;
+            scintilla.AutocompleteListSelectedBackColor = Color.FromArgb(0, 120, 215);
+            scintilla.Dock = DockStyle.Fill;
+            scintilla.Font = new Font("Verdana", 9F);
+            scintilla.LexerName = null;
+            scintilla.Location = new Point(0, 24);
+            scintilla.Name = "scintilla";
+            scintilla.ScrollWidth = 49;
+            scintilla.Size = new Size(384, 337);
+            scintilla.TabIndex = 0;
+            scintilla.Click += scintilla1_Click;
             // 
             // menuStrip1
             // 
@@ -117,7 +117,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(384, 361);
             Controls.Add(statusStrip1);
-            Controls.Add(scintilla1);
+            Controls.Add(scintilla);
             Controls.Add(menuStrip1);
             MainMenuStrip = menuStrip1;
             Name = "MainForm";
@@ -133,7 +133,7 @@
 
         #endregion
 
-        private ScintillaNET.Scintilla scintilla1;
+        private ScintillaNET.Scintilla scintilla;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem runToolStripMenuItem;
         private ToolStripMenuItem toggleFreezeF1ToolStripMenuItem;

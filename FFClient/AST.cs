@@ -1,22 +1,29 @@
 ﻿namespace FFClient.AST
 {
-    record struct Span(int Start, int Length);
-    abstract record Node(Span Span);
-    record LevelStart(Span Span, string level) : Node(Span);
-    record BreakLine(Span Span) : Node(Span);
-    record InputLine(Span Span, int Count, Aim Aim, ButtonsInput Buttons) : Node(Span);
-    abstract record Aim(Span Span);
-    record AimDiscrete(Span Span, AimVector Vec) : Aim(Span);
-    record AimContinous(Span Span, AimVector Vec1, AimVector Vec2) : Aim(Span);
-    record AimBlank(Span Span) : Aim(Span);
-    abstract record AimVector(Span Span);
-    record AimVectorAngle(Span Span, float X, float Y) : AimVector(Span);
-    record AimVectorPoint(Span Span, float X, float Y, float Z) : AimVector(Span);
-    record ButtonsInput(Span Span, List<Buttons> Buttons);
-    abstract record Buttons(Span Span, Key Key);
-    record ButtonPress(Span Span, Key Key) : Buttons(Span, Key);
-    record ButtonRelease(Span Span, Key Key) : Buttons(Span, Key);
-    record ButtonHold(Span Span, Key Key, int? Count) : Buttons(Span, Key);
+    abstract record Node
+    {
+        public required int Row { get; init; }
+        public required int Col { get; init; }
+        public required int Length { get; init; }
+    };
+    record LevelStart(LevelName level) : Node();
+    record LevelName(string name) : Node();
+    record Breakpoint() : Node();
+    record Input(FrameCount Count, Aim Aim, List<Button> Buttons) : Node();
+    record FrameCount(int Value) : Node();
+    abstract record Aim() : Node();
+    record AimDiscrete(AimVector Vec) : Aim();
+    record AimContinuous(AimVector Vec1, AimVector Vec2) : Aim();
+    record AimBlank() : Aim();
+    abstract record AimVector() : Node();
+    record AimVectorAngle(FloatValue X, FloatValue Y) : AimVector();
+    record AimVectorPoint(FloatValue X, FloatValue Y, FloatValue Z) : AimVector();
+    record FloatValue(float Value) : Node();
+    abstract record Button(Key Key) : Node();
+    record ButtonPress(Key Key) : Button(Key);
+    record ButtonRelease(Key Key) : Button(Key);
+    record ButtonHoldExplicit(Key Key, int Count) : Button(Key);
+    record ButtonHoldImplicit(Key Key) : Button(Key);
     enum Key : ushort {
         Forward = 'W',
         Backward = 'S',

@@ -14,7 +14,7 @@ namespace FreezeFrame
 
         private void scintilla1_Click(object sender, EventArgs e)
         {
-
+            
         }
 
         private void enableF1ToolStripMenuItem_Click(object sender, EventArgs e)
