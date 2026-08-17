@@ -1,4 +1,4 @@
-namespace FreezeFrame
+namespace FFClient
 {
     internal static class Program
     {

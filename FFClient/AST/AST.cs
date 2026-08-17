@@ -2,20 +2,17 @@
 {
     abstract record Node
     {
-        public required int Row { get; init; }
-        public required int Col { get; init; }
-        public required int Length { get; init; }
+        public required (int Position, int Length) Span { get; init; }
     };
-    record LevelStart(LevelName level) : Node();
-    record LevelName(string name) : Node();
+    record LevelStart(string name) : Node();
     record Breakpoint() : Node();
-    record Input(FrameCount Count, Aim Aim, List<Button> Buttons) : Node();
-    record FrameCount(int Value) : Node();
+    record Input(IntValue Count, Aim Aim, List<Button> Buttons) : Node();
+    record IntValue(int Value) : Node();
     abstract record Aim() : Node();
     record AimDiscrete(AimVector Vec) : Aim();
     record AimContinuous(AimVector Vec1, AimVector Vec2) : Aim();
-    record AimBlank() : Aim();
     abstract record AimVector() : Node();
+    record AimVectorBlank() : AimVector();
     record AimVectorAngle(FloatValue X, FloatValue Y) : AimVector();
     record AimVectorPoint(FloatValue X, FloatValue Y, FloatValue Z) : AimVector();
     record FloatValue(float Value) : Node();

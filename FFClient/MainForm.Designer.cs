@@ -1,4 +1,4 @@
-﻿namespace FreezeFrame
+﻿namespace FFClient
 {
     partial class MainForm
     {

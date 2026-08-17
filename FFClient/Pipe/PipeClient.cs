@@ -1,7 +1,8 @@
-﻿using System.IO.Pipes;
+﻿using FreezeFrame.Protocol;
+using System.IO.Pipes;
 using System.Threading.Channels;
 
-namespace FreezeFrame
+namespace FFClient.Pipe
 {
     class PipeClient
     {
@@ -26,7 +27,7 @@ namespace FreezeFrame
 
         private async Task Connect(CancellationToken ct = default)
         {
-            using (var stream = new NamedPipeClientStream(".", Protocol.Consts.PipeName, PipeDirection.InOut,
+            using (var stream = new NamedPipeClientStream(".", Consts.PipeName, PipeDirection.InOut,
                 PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly))
             {
                 await stream.ConnectAsync(); // connect to server
@@ -48,13 +49,13 @@ namespace FreezeFrame
             while (!ct.IsCancellationRequested)
             {
                 await stream.ReadExactlyAsync(header, 0, 1, ct); // get first byte
-                if ((header[0] & Protocol.Consts.PayloadFlag) == 0) // payloadless messages
+                if ((header[0] & Consts.PayloadFlag) == 0) // payloadless messages
                 {
                     await rcvd.Writer.WriteAsync(new Message { opcode = header[0], payload = null }, ct);
                     continue;
                 }
-                await stream.ReadExactlyAsync(header, 1, Protocol.Consts.HeaderBytes - 1, ct); // get header length
-                size = ToUInt24(header.AsSpan(1, Protocol.Consts.HeaderBytes - 1))
+                await stream.ReadExactlyAsync(header, 1, Consts.HeaderBytes - 1, ct); // get header length
+                size = ToUInt24(header.AsSpan(1, Consts.HeaderBytes - 1));
                 byte[] buf = new byte[size];
                 await stream.ReadExactlyAsync(buf, 0, size, ct);
                 await rcvd.Writer.WriteAsync(new Message { opcode = header[0], payload = buf }, ct);

@@ -1,4 +1,4 @@
-namespace FreezeFrame
+namespace FFClient
 {
     public partial class MainForm : Form
     {
