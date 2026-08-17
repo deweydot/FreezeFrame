@@ -1,4 +1,6 @@
 ﻿using BepInEx;
+using FreezeFrame.Pipe;
+using FreezeFrame.TAS;
 using HarmonyLib;
 using UnityEngine;
 
@@ -8,7 +10,7 @@ namespace FreezeFrame
     [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
     public partial class Plugin : BaseUnityPlugin
     {
-        private PipeController pipe = new PipeController();
+        private PipeServer pipe = new PipeServer();
         private FrameController frame;
         private SettingsController settings = new SettingsController();
         private VirtualInput input;
@@ -31,7 +33,7 @@ namespace FreezeFrame
             if (input == null) input = new VirtualInput();
             frame.Update();
             if (isLoading) return;
-            PipeController.Message? msg = pipe.Read();
+            PipeServer.Message? msg = pipe.Read();
             if (msg != null) this.Parse(msg.Value);
         }
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-namespace FreezeFrame
+namespace FreezeFrame.TAS
 {
     class FrameController
     {

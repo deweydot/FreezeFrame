@@ -5,14 +5,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 
-namespace FreezeFrame
+namespace FreezeFrame.Pipe
 {
-    class PipeController
+    class PipeServer
     {
         private ConcurrentQueue<Message> rcvd;
         private AsyncQueue<Message> send;
 
-        public PipeController()
+        public PipeServer()
         {
             rcvd = new ConcurrentQueue<Message>();
             send = new AsyncQueue<Message>();

@@ -1,7 +1,7 @@
 ﻿using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.InputSystem;
 
-namespace FreezeFrame
+namespace FreezeFrame.TAS
 {
     class VirtualInput
     {

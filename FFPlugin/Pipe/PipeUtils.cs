@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 
-namespace FreezeFrame
+namespace FreezeFrame.Pipe
 {
     class AsyncQueue<T>
     {

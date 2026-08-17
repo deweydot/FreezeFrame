@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using UnityEngine;
 
-namespace FreezeFrame
+namespace FreezeFrame.TAS
 {
     [HarmonyPatch(typeof(Time), nameof(Time.time), MethodType.Getter)]
     static class TimePatch

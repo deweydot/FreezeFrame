@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace FreezeFrame
+namespace FreezeFrame.TAS
 {
     class SettingsController
     {

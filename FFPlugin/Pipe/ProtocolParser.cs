@@ -3,7 +3,7 @@ using System.IO;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 
-namespace FreezeFrame
+namespace FreezeFrame.Pipe
 {
     partial class Plugin
     {
@@ -14,7 +14,7 @@ namespace FreezeFrame
             Key.G, Key.F, Key.V, Key.R
         };
 
-        private void Parse(PipeController.Message msg)
+        private void Parse(PipeServer.Message msg)
         {
             if ((msg.opcode & Protocol.Consts.PayloadFlag) == 0)
             {
@@ -56,7 +56,7 @@ namespace FreezeFrame
             }
         }
 
-        private static InputState? toInputState(byte[] data)
+        private static TAS.InputState? toInputState(byte[] data)
         {
             if (data.Length != 11) throw new InvalidDataException("Invalid Message Format");
             MouseState m = new MouseState
@@ -67,7 +67,7 @@ namespace FreezeFrame
             KeyboardState kb = new KeyboardState();
             for (int i = 0; i < KeyBitmaskOrder.Length; i++)
                 if ((mask & (1u << i)) != 0) kb.Set(KeyBitmaskOrder[i], true);
-            return new InputState { keyboard = kb, mouse = m };
+            return new TAS.InputState { keyboard = kb, mouse = m };
         }
     }
 }
